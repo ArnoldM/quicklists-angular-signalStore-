@@ -4,6 +4,7 @@ import { Checklist } from '../shared/interfaces/checklist';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FormModalComponent } from '../shared/ui/form-modal.component';
 import { ChecklistService } from '../shared/data-access/checklist.service';
+import { checklistListComponent } from './ui/checklist-list.component';
 
 @Component({
   standalone: true,
@@ -28,8 +29,17 @@ import { ChecklistService } from '../shared/data-access/checklist.service';
         />
       </ng-template>
     </app-modal>
+    <section>
+      <h2>Your checklists</h2>
+      <app-checklist-list [checklists]="checklistService.checklists()" />
+    </section>
   `,
-  imports: [ModalComponent, ReactiveFormsModule, FormModalComponent],
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    FormModalComponent,
+    checklistListComponent,
+  ],
 })
 export default class HomeComponent {
   formBuilder = inject(FormBuilder);
