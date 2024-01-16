@@ -15,11 +15,11 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
   selector: 'app-checklist',
   template: `
     @if (checklist(); as checklist) {
-    <app-checklist-header
-      [checklist]="checklist"
-      (addItem)="checklistItemBeingEdited.set({})"
-      (resetChecklist)="checklistItemService.reset$.next($event)"
-    />
+      <app-checklist-header
+        [checklist]="checklist"
+        (addItem)="checklistItemBeingEdited.set({})"
+        (resetChecklist)="checklistItemService.reset$.next($event)"
+      />
     }
     <app-modal [isOpen]="!!checklistItemBeingEdited()">
       <ng-template>
@@ -27,10 +27,15 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
           title="Create item"
           [formGroup]="checklistItemForm"
           (save)="
-            checklistItemService.add$.next({
-              item: checklistItemForm.getRawValue(),
-              checklistId: checklist()?.id!
-            })
+            checklistItemBeingEdited()?.id
+              ? checklistItemService.edit$.next({
+                  id: checklistItemBeingEdited()!.id!,
+                  data: checklistItemForm.getRawValue()
+                })
+              : checklistItemService.add$.next({
+                  item: checklistItemForm.getRawValue(),
+                  checklistId: checklist()?.id!
+                })
           "
           (close)="checklistItemBeingEdited.set(null)"
         ></app-form-modal>
@@ -39,6 +44,8 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
     <app-checklist-item-list
       [checklistItems]="items()"
       (toggle)="checklistItemService.toggle$.next($event)"
+      (edit)="checklistItemBeingEdited.set($event)"
+      (delete)="checklistItemService.remove$.next($event)"
     />
   `,
   imports: [
@@ -61,14 +68,13 @@ export default class ChecklistComponent {
   checklist = computed(() => {
     const checklists = this.checklistService.checklists();
     const id = this.params()?.get('id');
-    const checklist = checklists.find((checklist) => checklist.id === id);
-    return checklist;
+    return checklists.find((checklist) => checklist.id === id);
   });
 
   items = computed(() =>
     this.checklistItemService
       .checklistItems()
-      .filter((item) => item.checklistId === this.params()?.get('id'))
+      .filter((item) => item.checklistId === this.params()?.get('id')),
   );
 
   checklistItemForm = this.formBuilder.nonNullable.group({
@@ -81,6 +87,10 @@ export default class ChecklistComponent {
 
       if (!checklistItem) {
         this.checklistItemForm.reset();
+      } else {
+        this.checklistItemForm.patchValue({
+          title: checklistItem.title,
+        });
       }
     });
   }

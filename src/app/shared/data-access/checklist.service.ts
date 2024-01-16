@@ -1,8 +1,13 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { AddChecklist, Checklist } from '../interfaces/checklist';
+import {
+  AddChecklist,
+  Checklist,
+  EditCheckList,
+} from '../interfaces/checklist';
 import { Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StorageService } from './storage.service';
+import { ChecklistItemService } from '../../checklist/data-access/checklist-item.service';
 
 export interface ChecklistState {
   checklists: Checklist[];
@@ -15,6 +20,7 @@ export interface ChecklistState {
 })
 export class ChecklistService {
   #storageService = inject(StorageService);
+  #checklistItemService = inject(ChecklistItemService);
   // state
   private state = signal<ChecklistState>({
     checklists: [],
@@ -26,6 +32,8 @@ export class ChecklistService {
   loaded = computed(() => this.state().loaded);
   // sources
   add$ = new Subject<AddChecklist>();
+  edit$ = new Subject<EditCheckList>();
+  remove$ = this.#checklistItemService.checklistRemoved$;
   private checklistsLoaded$ = this.#storageService.loadChecklists();
 
   constructor() {
@@ -34,7 +42,25 @@ export class ChecklistService {
       this.state.update((state) => ({
         ...state,
         checklists: [...state.checklists, this.addIdTochecklist(checklist)],
-      }))
+      })),
+    );
+
+    this.remove$.pipe(takeUntilDestroyed()).subscribe((id) =>
+      this.state.update((state) => ({
+        ...state,
+        checklists: state.checklists.filter((checklist) => checklist.id !== id),
+      })),
+    );
+
+    this.edit$.pipe(takeUntilDestroyed()).subscribe((update) =>
+      this.state.update((state) => ({
+        ...state,
+        checklists: state.checklists.map((checklist) =>
+          checklist.id === update.id
+            ? { ...checklist, title: update.data.title }
+            : checklist,
+        ),
+      })),
     );
 
     this.checklistsLoaded$.pipe(takeUntilDestroyed()).subscribe({
@@ -66,7 +92,7 @@ export class ChecklistService {
     let slug = title.toLowerCase().replace(/\s+/g, '-');
 
     const matchingSlugs = this.checklists().find(
-      (checklist) => checklist.id === slug
+      (checklist) => checklist.id === slug,
     );
 
     if (matchingSlugs) {

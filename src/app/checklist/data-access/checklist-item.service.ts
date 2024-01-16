@@ -53,7 +53,7 @@ export class ChecklistItemService {
             checked: false,
           },
         ],
-      }))
+      })),
     );
 
     this.toggle$.pipe(takeUntilDestroyed()).subscribe((checklistItemId) =>
@@ -63,10 +63,10 @@ export class ChecklistItemService {
           ...state.checklistItems.map((item) =>
             item.id === checklistItemId
               ? { ...item, checked: !item.checked }
-              : item
+              : item,
           ),
         ],
-      }))
+      })),
     );
 
     this.reset$.pipe(takeUntilDestroyed()).subscribe((checklistId) =>
@@ -76,10 +76,10 @@ export class ChecklistItemService {
           ...state.checklistItems.map((item) =>
             item.checklistId === checklistId
               ? { ...item, checked: false }
-              : item
+              : item,
           ),
         ],
-      }))
+      })),
     );
 
     this.edit$.pipe(takeUntilDestroyed()).subscribe((update) =>
@@ -87,10 +87,12 @@ export class ChecklistItemService {
         ...state,
         checklistItems: [
           ...state.checklistItems.map((item) =>
-            item.id === update.id ? { ...item, title: update.data.title } : item
+            item.id === update.id
+              ? { ...item, title: update.data.title }
+              : item,
           ),
         ],
-      }))
+      })),
     );
 
     this.remove$.pipe(takeUntilDestroyed()).subscribe((id) =>
@@ -99,7 +101,7 @@ export class ChecklistItemService {
         checklistItems: [
           ...state.checklistItems.filter((item) => item.id !== id),
         ],
-      }))
+      })),
     );
 
     this.checklistItemsLoaded$.pipe(takeUntilDestroyed()).subscribe({
@@ -115,6 +117,15 @@ export class ChecklistItemService {
           error: err,
         })),
     });
+
+    this.checklistRemoved$.pipe(takeUntilDestroyed()).subscribe((checklistId) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: state.checklistItems.filter(
+          (item) => item.checklistId !== checklistId,
+        ),
+      })),
+    );
 
     // effects
     effect(() => {

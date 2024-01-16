@@ -25,13 +25,24 @@ import { checklistListComponent } from './ui/checklist-list.component';
           "
           [formGroup]="checkListForm"
           (close)="checklistBeingEdited.set(null)"
-          (save)="checklistService.add$.next(checkListForm.getRawValue())"
+          (save)="
+            checklistBeingEdited()?.id
+              ? checklistService.edit$.next({
+                  id: checklistBeingEdited()!.id!,
+                  data: checkListForm.getRawValue()
+                })
+              : checklistService.add$.next(checkListForm.getRawValue())
+          "
         />
       </ng-template>
     </app-modal>
     <section>
       <h2>Your checklists</h2>
-      <app-checklist-list [checklists]="checklistService.checklists()" />
+      <app-checklist-list
+        [checklists]="checklistService.checklists()"
+        (delete)="checklistService.remove$.next($event)"
+        (edit)="checklistBeingEdited.set($event)"
+      />
     </section>
   `,
   imports: [
@@ -55,7 +66,13 @@ export default class HomeComponent {
       const checklist = this.checklistBeingEdited();
       if (!checklist) {
         this.checkListForm.reset();
+      } else {
+        this.checkListForm.patchValue({
+          title: checklist.title,
+        });
       }
     });
   }
+
+  protected readonly checklistListComponent = checklistListComponent;
 }
