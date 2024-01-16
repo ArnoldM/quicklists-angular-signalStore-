@@ -2,6 +2,7 @@ import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import {
   AddChecklistItem,
   ChecklistItem,
+  EditChecklistItem,
   RemoveChecklistItem,
 } from '../../shared/interfaces/checklist-item';
 import { Subject } from 'rxjs';
@@ -33,6 +34,9 @@ export class ChecklistItemService {
   add$ = new Subject<AddChecklistItem>();
   toggle$ = new Subject<RemoveChecklistItem>();
   reset$ = new Subject<RemoveChecklist>();
+  edit$ = new Subject<EditChecklistItem>();
+  remove$ = new Subject<RemoveChecklistItem>();
+  checklistRemoved$ = new Subject<RemoveChecklist>();
   private checklistItemsLoaded$ = this.#storageService.loadChecklistsItems();
 
   constructor() {
@@ -74,6 +78,26 @@ export class ChecklistItemService {
               ? { ...item, checked: false }
               : item
           ),
+        ],
+      }))
+    );
+
+    this.edit$.pipe(takeUntilDestroyed()).subscribe((update) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: [
+          ...state.checklistItems.map((item) =>
+            item.id === update.id ? { ...item, title: update.data.title } : item
+          ),
+        ],
+      }))
+    );
+
+    this.remove$.pipe(takeUntilDestroyed()).subscribe((id) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: [
+          ...state.checklistItems.filter((item) => item.id !== id),
         ],
       }))
     );
