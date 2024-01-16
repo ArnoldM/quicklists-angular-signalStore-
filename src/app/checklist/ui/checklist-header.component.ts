@@ -15,6 +15,13 @@ import { RouterLink } from '@angular/router';
       </div>
     </header>
   `,
+  styles: [
+    `
+      button {
+        margin-left: 1rem;
+      }
+    `,
+  ],
   imports: [RouterLink],
 })
 export class ChecklistHeaderComponent {
