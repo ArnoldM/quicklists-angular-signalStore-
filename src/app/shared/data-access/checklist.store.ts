@@ -6,9 +6,11 @@ import { AddChecklist, Checklist, EditCheckList } from '../interfaces/checklist'
 import { withLoaded } from './with-loaded';
 import { withError } from './with-error';
 import { withChecklistStorage } from './with-checklist-storage';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
-export const checklistStore = signalStore(
+export const ChecklistStore = signalStore(
   { providedIn: 'root' },
+  withDevtools('checklists'),
   withLoaded(),
   withError(),
   withChecklistStorage('checklists'),

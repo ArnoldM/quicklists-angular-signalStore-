@@ -7,13 +7,13 @@ import {
   EditCheckList,
 } from '../interfaces/checklist';
 import { ChecklistItemService } from '../../checklist/data-access/checklist-item.service';
-import { checklistStore } from './checklist.store';
+import { ChecklistStore } from './checklist.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChecklistService {
-  #checklistStore = inject(checklistStore);
+  #checklistStore = inject(ChecklistStore);
   #checklistItemService = inject(ChecklistItemService);
 
   checklists = computed(() => this.#checklistStore.entities());
