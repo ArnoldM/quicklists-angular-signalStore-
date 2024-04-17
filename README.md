@@ -1,6 +1,8 @@
-# QuicklistsAngular
+# QuicklistsAngularSignalStore
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
+A quicklists application build with angular using signals based on Josh Morony Angular start course and updated with signalStore from NgRx.
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8 and updated to version 17.3.4
 
 ## Development server
 
