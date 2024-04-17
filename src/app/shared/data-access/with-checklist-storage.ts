@@ -1,7 +1,7 @@
 import { inject, InjectionToken, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { patchState, signalStoreFeature, withMethods, withState } from '@ngrx/signals';
-import { addEntities } from '@ngrx/signals/entities';
+import { setAllEntities } from '@ngrx/signals/entities';
 
 import { Checklist } from '../interfaces/checklist';
 
@@ -23,15 +23,15 @@ export const withChecklistStorage = () => signalStoreFeature(
     const storage = inject(LOCAL_STORAGE);
 
     return {
-      saveCheckLists(checklists: Checklist[]) {
+      saveCheckListsToLocalStorage(checklists: Checklist[]) {
         storage.setItem('checklists', JSON.stringify(checklists));
       },
-      loadChecklists() {
+      loadChecklistsFromLocalStorage() {
         const checklistsJson = storage.getItem('checklists');
         if (!checklistsJson) {
           return false;
         }
-        patchState(state, [addEntities(JSON.parse(checklistsJson)), { loaded: true }]);
+        patchState(state, [setAllEntities(JSON.parse(checklistsJson)), { loaded: true }]);
         return true;
       }
     }
