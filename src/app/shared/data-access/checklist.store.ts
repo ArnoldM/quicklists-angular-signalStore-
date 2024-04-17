@@ -1,9 +1,8 @@
-import { inject } from '@angular/core';
-import { signalStore, withMethods } from '@ngrx/signals';
-import { withEntities } from '@ngrx/signals/entities';
+import { effect } from '@angular/core';
+import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
+import { addEntity, removeEntity, updateEntity, withEntities } from '@ngrx/signals/entities';
 
 import { AddChecklist, Checklist, EditCheckList } from '../interfaces/checklist';
-import { ChecklistService } from './checklist.service';
 import { withLoaded } from './with-loaded';
 import { withError } from './with-error';
 import { withChecklistStorage } from './with-checklist-storage';
@@ -15,7 +14,6 @@ export const checklistStore = signalStore(
   withChecklistStorage(),
   withEntities<Checklist>(),
   withMethods(state => {
-    const checklistService = inject(ChecklistService);
     const addIdToChecklist = (checklist: AddChecklist): Checklist => ({
       ...checklist,
       id: generateSlug(checklist.title),
@@ -34,11 +32,26 @@ export const checklistStore = signalStore(
       return slug;
     }
 
+    effect(() => {
+      const checklists = state.entities();
+      state.saveCheckListsToLocalStorage(checklists);
+    })
+
     return {
-      loadCheckList() {},
-      add(checklist: AddChecklist) {},
-      remove(id: string) {},
-      edit(checklist: EditCheckList) {}
+      add(checklist: AddChecklist) {
+        patchState(state, addEntity(addIdToChecklist(checklist)));
+      },
+      remove(id: string) {
+        patchState(state, removeEntity(id));
+      },
+      edit(checklist: EditCheckList) {
+        patchState(state, updateEntity({ id: checklist.id, changes: checklist.data }));
+      }
     }
+  }),
+  withHooks({
+    onInit(state) {
+      state.loadChecklistsFromLocalStorage();
+    },
   })
 )
