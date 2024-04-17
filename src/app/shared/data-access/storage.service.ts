@@ -1,6 +1,5 @@
 import { Injectable, InjectionToken, PLATFORM_ID, inject } from '@angular/core';
 import { of } from 'rxjs';
-import { Checklist } from '../interfaces/checklist';
 import { ChecklistItem } from '../interfaces/checklist-item';
 
 export const LOCAL_STORAGE = new InjectionToken<Storage>(
@@ -21,20 +20,11 @@ export const LOCAL_STORAGE = new InjectionToken<Storage>(
 export class StorageService {
   storage = inject(LOCAL_STORAGE);
 
-  loadChecklists() {
-    const checklists = this.storage.getItem('checklists');
-    return of(checklists ? (JSON.parse(checklists) as Checklist[]) : []);
-  }
-
   loadChecklistsItems() {
     const checklistsItems = this.storage.getItem('checklistItems');
     return of(
       checklistsItems ? (JSON.parse(checklistsItems) as ChecklistItem[]) : []
     );
-  }
-
-  saveChecklists(checklists: Checklist[]) {
-    this.storage.setItem('checklists', JSON.stringify(checklists));
   }
 
   saveChecklistItems(checklistItems: ChecklistItem[]) {

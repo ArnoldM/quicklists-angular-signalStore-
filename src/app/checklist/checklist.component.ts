@@ -1,10 +1,11 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ChecklistService } from '../shared/data-access/checklist.service';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+
+import { ChecklistService } from '../shared/data-access/checklist.service';
 import { ChecklistHeaderComponent } from './ui/checklist-header.component';
 import { ChecklistItemService } from './data-access/checklist-item.service';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ChecklistItem } from '../shared/interfaces/checklist-item';
 import { FormModalComponent } from '../shared/ui/form-modal.component';
 import { ModalComponent } from '../shared/ui/modal.component';

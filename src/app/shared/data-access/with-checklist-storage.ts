@@ -31,7 +31,7 @@ export const withChecklistStorage = () => signalStoreFeature(
         if (!checklistsJson) {
           return false;
         }
-        patchState(state, [setAllEntities(JSON.parse(checklistsJson)), { loaded: true }]);
+        patchState(state, setAllEntities(JSON.parse(checklistsJson)), { loaded: true });
         return true;
       }
     }
