@@ -17,17 +17,17 @@ export const LOCAL_STORAGE = new InjectionToken<Storage>(
   }
 );
 
-export const withChecklistStorage = () => signalStoreFeature(
+export const withChecklistStorage = (storageKey: string) => signalStoreFeature(
   withState({}),
   withMethods(state => {
     const storage = inject(LOCAL_STORAGE);
 
     return {
       saveCheckListsToLocalStorage(checklists: Checklist[]) {
-        storage.setItem('checklists', JSON.stringify(checklists));
+        storage.setItem(storageKey, JSON.stringify(checklists));
       },
       loadChecklistsFromLocalStorage() {
-        const checklistsJson = storage.getItem('checklists');
+        const checklistsJson = storage.getItem(storageKey);
         if (!checklistsJson) {
           return false;
         }

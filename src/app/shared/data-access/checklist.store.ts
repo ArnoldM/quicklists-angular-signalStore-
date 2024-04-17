@@ -11,7 +11,7 @@ export const checklistStore = signalStore(
   { providedIn: 'root' },
   withLoaded(),
   withError(),
-  withChecklistStorage(),
+  withChecklistStorage('checklists'),
   withEntities<Checklist>(),
   withMethods(state => {
     const addIdToChecklist = (checklist: AddChecklist): Checklist => ({
