@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 
@@ -16,7 +16,7 @@ import { ChecklistItemStore } from './checklist-item.store';
 export class ChecklistItemService {
   #checklistItemStore = inject(ChecklistItemStore);
 
-  checklistItems = computed(() => this.#checklistItemStore.entities());
+  checklistItems = this.#checklistItemStore.entities;
 
   add$ = new Subject<AddChecklistItem>();
   toggle$ = new Subject<RemoveChecklistItem>();

@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class ChecklistService {
   #checklistStore = inject(ChecklistStore);
   #checklistItemService = inject(ChecklistItemService);
 
-  checklists = computed(() => this.#checklistStore.entities());
+  checklists = this.#checklistStore.entities;
 
   add$ = new Subject<AddChecklist>();
   edit$ = new Subject<EditCheckList>();
